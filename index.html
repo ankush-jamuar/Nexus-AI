@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus | AI-Powered Productivity</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        background: '#040409',
+                        surface: '#0f0f18',
+                        surfaceLight: '#1a1a2e',
+                        primary: '#a64aff',
+                        secondary: '#00d8ff',
+                        accent: '#ff2a85'
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                        'hero-glow': 'conic-gradient(from 180deg at 50% 50%, #a64aff55 0deg, #00d8ff55 180deg, #a64aff55 360deg)',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'spin-slow': 'spin 15s linear infinite',
+                        'pulse-glow': 'pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-up': 'slideUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 1 },
+                            '50%': { opacity: .5 },
+                        },
+                        slideUp: {
+                            '0%': { opacity: 0, transform: 'translateY(40px)' },
+                            '100%': { opacity: 1, transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .glass {
+                @apply bg-surfaceLight/40 backdrop-blur-xl border border-white/10;
+            }
+            .glass-card {
+                @apply bg-white/5 backdrop-blur-lg border border-white/5 shadow-xl hover:border-primary/50 transition-all duration-300;
+            }
+            .text-gradient {
+                @apply text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-[spin-slow_4s_linear_infinite];
+            }
+            .glow-btn {
+                @apply relative overflow-hidden text-white font-medium rounded-full transition-all hover:scale-105 active:scale-95;
+            }
+            .glow-btn::before {
+                content: '';
+                @apply absolute inset-0 bg-gradient-to-r from-primary to-secondary opacity-80 transition-opacity duration-300;
+            }
+            .glow-btn:hover::before {
+                @apply opacity-100;
+            }
+            .glow-btn span {
+                @apply relative z-10 block px-6 py-3;
+            }
+        }
+
+        body {
+            background-color: #040409;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Background blobs */
+        .ambient-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: -1;
+            opacity: 0.4;
+            animation: float 10s ease-in-out infinite alternate;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-primary/30 selection:text-white">
+
+    <!-- Ambient Background Elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-[-1]">
+        <div class="ambient-blob bg-primary w-[500px] h-[500px] top-[-100px] left-[-200px]"></div>
+        <div class="ambient-blob bg-secondary w-[400px] h-[400px] top-[30%] right-[-100px] animation-delay-2000"></div>
+        <div class="ambient-blob bg-accent w-[600px] h-[600px] bottom-[-200px] left-[20%] opacity-20 animation-delay-4000"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 py-6 border-b border-transparent">
+        <div class="container mx-auto px-6 lg:px-12 flex justify-between items-center">
+            <a href="#" class="flex items-center gap-2 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center p-[2px]">
+                    <div class="w-full h-full bg-background rounded-[10px] flex items-center justify-center group-hover:bg-transparent transition-colors">
+                        <i class="ph-fill ph-target text-xl"></i>
+                    </div>
+                </div>
+                <span class="text-xl font-bold tracking-wide">Nexus<span class="text-primary">.ai</span></span>
+            </a>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center gap-8 glass px-8 py-3 rounded-full">
+                <a href="#features" class="text-sm text-gray-300 hover:text-white transition-colors">Features</a>
+                <a href="#about" class="text-sm text-gray-300 hover:text-white transition-colors">Platform</a>
+                <a href="#pricing" class="text-sm text-gray-300 hover:text-white transition-colors">Pricing</a>
+            </div>
+
+            <div class="hidden md:flex items-center gap-4">
+                <a href="#" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">Login</a>
+                <button class="glow-btn">
+                    <span>Start Free Trial</span>
+                </button>
+            </div>
+
+            <!-- Mobile Menu Btn -->
+            <button class="md:hidden text-2xl text-gray-300 hover:text-white">
+                <i class="ph ph-list"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative pt-40 pb-24 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div class="container mx-auto px-6 lg:px-12 relative z-10 h-full flex flex-col lg:flex-row items-center gap-16">
+            
+            <div class="flex-1 text-center lg:text-left animate-slide-up">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6 border-primary/30">
+                    <span class="flex h-2 w-2 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+                    </span>
+                    <span class="text-xs font-medium text-secondary tracking-wider uppercase">Nexus v2.0 is Live</span>
+                </div>
+                
+                <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-6">
+                    Amplify Output With <br class="hidden lg:block"/>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Autonomous</span> Intelligence
+                </h1>
+                
+                <p class="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                    The premier AI-powered productivity platform designed to streamline your operations, predict bottlenecks, and supercharge your team's velocity in real-time.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                    <button class="glow-btn w-full sm:w-auto text-lg">
+                        <span>Get Started for Free</span>
+                    </button>
+                    <button class="group glass text-white font-medium rounded-full px-8 py-3 w-full sm:w-auto flex items-center justify-center gap-2 hover:bg-white/10 transition-all">
+                        <i class="ph-fill ph-play-circle text-primary text-2xl group-hover:scale-110 transition-transform"></i>
+                        Watch Demo
+                    </button>
+                </div>
+                
+                <div class="mt-12 flex items-center justify-center lg:justify-start gap-6 text-sm text-gray-500">
+                    <div class="flex items-center gap-2"><i class="ph-fill ph-check-circle text-primary"></i> No credit card</div>
+                    <div class="flex items-center gap-2"><i class="ph-fill ph-check-circle text-primary"></i> 14-day free trial</div>
+                </div>
+            </div>
+
+            <div class="flex-1 w-full relative h-[400px] sm:h-[500px] lg:h-[600px] animate-slide-up" style="animation-delay: 0.2s;">
+                <div class="absolute inset-0 bg-hero-glow rounded-full blur-[100px] opacity-30 animate-spin-slow"></div>
+                <!-- 3D Illustration / Graphic -->
+                <div class="relative w-full h-full flex items-center justify-center animate-float">
+                    <div class="w-full max-w-[600px] aspect-square rounded-[40px] glass p-4 relative overflow-hidden border-t-white/20 border-l-white/20 shadow-[-20px_20px_60px_-15px_rgba(166,74,255,0.2)]">
+                        <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent z-10 pointer-events-none"></div>
+                        <img src="assets/images/hero.png" alt="AI Dashboard Interface" class="w-full h-full object-cover rounded-[30px] rounded-tl-sm relative z-0">
+                        
+                        <!-- Floating UI Elements -->
+                        <div class="absolute top-[10%] -left-8 glass-card rounded-2xl p-4 flex items-center gap-4 z-20 animate-float" style="animation-delay: 1s;">
+                            <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
+                                <i class="ph-bold ph-trend-up"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-400">Velocity</p>
+                                <p class="text-sm font-bold">+24%</p>
+                            </div>
+                        </div>
+
+                        <div class="absolute bottom-[20%] -right-6 glass-card rounded-2xl p-4 flex items-center gap-4 z-20 animate-float" style="animation-delay: 2s;">
+                            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                                <i class="ph-bold ph-robot"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-400">AI Insights</p>
+                                <p class="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Optimized</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Brands Section -->
+    <section class="border-y border-white/5 bg-white/[0.02] py-10">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-sm font-medium text-gray-500 mb-6 tracking-widest uppercase">Trusted by forward-thinking teams</p>
+            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+                <i class="ph-bold ph-stripe-logo text-4xl hover:text-white transition-colors cursor-pointer"></i>
+                <i class="ph-bold ph-discord-logo text-4xl hover:text-white transition-colors cursor-pointer"></i>
+                <i class="ph-bold ph-figma-logo text-4xl hover:text-white transition-colors cursor-pointer"></i>
+                <i class="ph-bold ph-slack-logo text-4xl hover:text-white transition-colors cursor-pointer"></i>
+                <i class="ph-bold ph-aws-logo text-4xl hover:text-white transition-colors cursor-pointer"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-24 lg:py-32 relative">
+        <div class="container mx-auto px-6 lg:px-12">
+            <div class="text-center max-w-3xl mx-auto mb-20 reveal">
+                <h2 class="text-primary font-bold tracking-wider uppercase text-sm mb-3">Unleash Your Potential</h2>
+                <h3 class="text-3xl md:text-5xl font-bold mb-6">Features that feel like the future</h3>
+                <p class="text-gray-400 text-lg">Stop managing work and start executing logic. Nexus automates the busywork so you can focus on building.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Feature 1 -->
+                <div class="glass-card rounded-3xl p-8 group reveal">
+                    <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="ph-fill ph-brain text-3xl text-primary drop-shadow-[0_0_10px_rgba(166,74,255,0.8)]"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3">Neural Prioritization</h4>
+                    <p class="text-gray-400 leading-relaxed">Our AI learns your work habits and automatically sequences tasks for maximum cognitive flow and deep work.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="glass-card rounded-3xl p-8 group reveal" style="transition-delay: 100ms;">
+                    <div class="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="ph-fill ph-lightning text-3xl text-secondary drop-shadow-[0_0_10px_rgba(0,216,255,0.8)]"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3">Predictive Automations</h4>
+                    <p class="text-gray-400 leading-relaxed">Trigger complex workflows before you even realize you need them, based on contextual triggers and historical data.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="glass-card rounded-3xl p-8 group reveal" style="transition-delay: 200ms;">
+                    <div class="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="ph-fill ph-chart-polar text-3xl text-accent drop-shadow-[0_0_10px_rgba(255,42,133,0.8)]"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3">Velocity Analytics</h4>
+                    <p class="text-gray-400 leading-relaxed">Real-time health metrics of your projects. Spot bottlenecks and reallocate resources instantly from a unified command center.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="glass-card rounded-3xl p-8 group reveal" style="transition-delay: 300ms;">
+                    <div class="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="ph-fill ph-shield-check text-3xl text-green-400 drop-shadow-[0_0_10px_rgba(74,222,128,0.8)]"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3">Quantum Security</h4>
+                    <p class="text-gray-400 leading-relaxed">Enterprise-grade encryption with autonomous threat detection keeps your intellectual property impregnable.</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="lg:col-span-2 glass-card rounded-3xl p-8 lg:p-10 flex flex-col md:flex-row items-center gap-8 group overflow-hidden relative reveal" style="transition-delay: 400ms;">
+                    <div class="absolute -right-20 -top-20 w-64 h-64 bg-primary/20 rounded-full blur-[80px] group-hover:bg-primary/30 transition-colors"></div>
+                    <div class="flex-1 relative z-10">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-4 text-xs font-medium text-white shadow-lg">
+                            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> Copilot
+                        </div>
+                        <h4 class="text-3xl font-bold mb-4">Your Context-Aware Assistant</h4>
+                        <p class="text-gray-400 mb-6 leading-relaxed">Chat naturally with your workspace. Ask Nexus to summarize threads, draft updates, or instantly find documents scattered across tools.</p>
+                        <a href="#" class="inline-flex items-center gap-2 text-primary hover:text-secondary transition-colors font-medium">
+                            Explore Copilot <i class="ph-bold ph-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="w-full md:w-1/2 aspect-[4/3] bg-surfaceLight rounded-2xl border border-white/10 p-4 relative z-10 shadow-2xl skew-y-2 group-hover:skew-y-0 transition-transform duration-500">
+                        <div class="flex items-center gap-2 mb-4 border-b border-white/5 pb-3">
+                            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><i class="ph-bold ph-robot text-white"></i></div>
+                            <div class="text-sm font-medium">Nexus Copilot</div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="bg-white/5 p-3 rounded-xl rounded-tl-none w-5/6 text-xs text-gray-300">Summarize the Q3 planning doc and create tasks.</div>
+                            <div class="bg-primary/20 border border-primary/30 p-3 rounded-xl rounded-tr-none w-11/12 ml-auto text-xs text-primary-light">Certainly. I found 12 key objectives. I've drafted them into priority tasks in your backlog. Ready to review?</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 relative overflow-hidden">
+        <div class="absolute inset-y-0 right-0 w-1/2 bg-surfaceLight/30 skew-x-12 origin-top-right mix-blend-screen"></div>
+        <div class="container mx-auto px-6 lg:px-12 flex flex-col-reverse lg:flex-row items-center gap-16 relative z-10">
+            
+            <div class="flex-1 w-full relative h-[400px] lg:h-[600px] reveal">
+                <!-- Isometric image -->
+                <div class="relative w-full h-full p-4 md:p-8 flex items-center justify-center">
+                    <div class="absolute inset-0 bg-blue-500/10 rounded-[40px] blur-3xl z-0"></div>
+                    <img src="assets/images/about.png" alt="AI Network Infrastructure" class="w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(0,216,255,0.3)] hover:scale-105 transition-transform duration-700 relative z-10">
+                </div>
+            </div>
+
+            <div class="flex-1 reveal">
+                <h2 class="text-primary font-bold tracking-wider uppercase text-sm mb-3">The Architecture</h2>
+                <h3 class="text-4xl lg:text-5xl font-bold mb-6 leading-tight">Beyond Simple <br> Task Management</h3>
+                <p class="text-gray-400 text-lg mb-8 leading-relaxed">
+                    We've built an autonomous engine from the ground up, utilizing multi-modal LLMs integrated directly into the core state machine of your workflows. 
+                    <br><br>
+                    It observes, learns, and anticipates your needs—organizing your day, assigning resources dynamically, and resolving conflicts automatically. Welcome to zero-friction productivity.
+                </p>
+                
+                <div class="space-y-6">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-full glass shrink-0 flex items-center justify-center text-secondary">
+                            <i class="ph-bold ph-globe-hemisphere-west text-xl"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-lg font-bold mb-1">Global Synchronization</h5>
+                            <p class="text-gray-400 text-sm">Real-time state distribution globally with `< 50ms` latency.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-full glass shrink-0 flex items-center justify-center text-primary">
+                            <i class="ph-bold ph-graph text-xl"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-lg font-bold mb-1">Semantic Knowledge Graph</h5>
+                            <p class="text-gray-400 text-sm">Every document, chat, and task is cross-linked instantly.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-24 lg:py-32 relative">
+        <div class="container mx-auto px-6 lg:px-12">
+            <div class="text-center max-w-3xl mx-auto mb-20 reveal">
+                <h3 class="text-3xl md:text-5xl font-bold mb-6">Transparent Pricing, Unlimited Scale</h3>
+                <p class="text-gray-400 text-lg">Choose a plan that fits your execution cadence.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center max-w-6xl mx-auto">
+                <!-- Basic Plan -->
+                <div class="glass-card rounded-3xl p-8 reveal">
+                    <h4 class="text-xl font-medium text-gray-300 mb-2">Starter</h4>
+                    <div class="flex items-end gap-1 mb-6">
+                        <span class="text-4xl font-bold">$19</span>
+                        <span class="text-gray-400 mb-1">/mo</span>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-8 pb-8 border-b border-white/10">Perfect for individuals and small startups finding their workflow.</p>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center gap-3 text-sm text-gray-300"><i class="ph-bold ph-check text-primary"></i> 5 Active Projects</li>
+                        <li class="flex items-center gap-3 text-sm text-gray-300"><i class="ph-bold ph-check text-primary"></i> Essential Integrations</li>
+                        <li class="flex items-center gap-3 text-sm text-gray-300"><i class="ph-bold ph-check text-primary"></i> Basic AI Suggestions</li>
+                        <li class="flex items-center gap-3 text-sm text-gray-500 line-through"><i class="ph-bold ph-x"></i> Custom Automations</li>
+                    </ul>
+                    <button class="w-full py-3 rounded-full border border-white/20 hover:bg-white/5 transition-colors font-medium">Choose Starter</button>
+                </div>
+
+                <!-- Pro Plan (Highlighted) -->
+                <div class="relative rounded-3xl p-[2px] bg-gradient-to-b from-primary via-secondary to-primary/20 reveal md:scale-105 z-10 shadow-2xl shadow-primary/20">
+                    <div class="absolute top-0 right-10 -translate-y-1/2 bg-gradient-to-r from-primary to-secondary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Most Popular</div>
+                    <div class="bg-surface h-full w-full rounded-[22px] p-8 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl"></div>
+                        <h4 class="text-xl font-medium text-white mb-2">Pro</h4>
+                        <div class="flex items-end gap-1 mb-6">
+                            <span class="text-5xl font-bold">$49</span>
+                            <span class="text-gray-400 mb-1">/mo</span>
+                        </div>
+                        <p class="text-sm text-gray-400 mb-8 pb-8 border-b border-white/10">For elite teams requiring full autonomous capabilities.</p>
+                        <ul class="space-y-4 mb-8">
+                            <li class="flex items-center gap-3 text-sm font-medium"><i class="ph-bold ph-check text-secondary drop-shadow-[0_0_5px_rgba(0,216,255,0.8)]"></i> Unlimited Projects</li>
+                            <li class="flex items-center gap-3 text-sm font-medium"><i class="ph-bold ph-check text-secondary drop-shadow-[0_0_5px_rgba(0,216,255,0.8)]"></i> Advanced AI Copilot</li>
+                            <li class="flex items-center gap-3 text-sm font-medium"><i class="ph-bold ph-check text-secondary drop-shadow-[0_0_5px_rgba(0,216,255,0.8)]"></i> Custom Neural Automations</li>
+                            <li class="flex items-center gap-3 text-sm font-medium"><i class="ph-bold ph-check text-secondary drop-shadow-[0_0_5px_rgba(0,216,255,0.8)]"></i> Priority Support</li>
+                        </ul>
+                        <button class="glow-btn w-full"><span>Upgrade to Pro</span></button>
+                    </div>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="glass-card rounded-3xl p-8 reveal">
+                    <h4 class="text-xl font-medium text-gray-300 mb-2">Enterprise</h4>
+                    <div class="flex items-end gap-1 mb-6">
+                        <span class="text-4xl font-bold">Custom</span>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-8 pb-8 border-b border-white/10">Dedicated infrastructure for massive operational scale.</p>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center gap-3 text-sm text-gray-300"><i class="ph-bold ph-check text-primary"></i> Dedicated AI Models</li>
+                        <li class="flex items-center gap-3 text-sm text-gray-300"><i class="ph-bold ph-check text-primary"></i> On-Premise Deployment</li>
+                        <li class="flex items-center gap-3 text-sm text-gray-300"><i class="ph-bold ph-check text-primary"></i> SSO & Advanced Security</li>
+                        <li class="flex items-center gap-3 text-sm text-gray-300"><i class="ph-bold ph-check text-primary"></i> Dedicated Success Manager</li>
+                    </ul>
+                    <button class="w-full py-3 rounded-full border border-white/20 hover:bg-white/5 transition-colors font-medium">Contact Sales</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-24 relative bg-black/20 overflow-hidden">
+        <div class="container mx-auto px-6 lg:px-12 relative z-10">
+            <h3 class="text-3xl md:text-5xl font-bold mb-16 text-center reveal">Join the Vanguard</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="glass-card p-8 rounded-3xl reveal">
+                    <div class="flex gap-1 text-accent mb-6">
+                        <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i>
+                    </div>
+                    <p class="text-gray-300 text-lg sm:text-base leading-relaxed mb-8">"Nexus didn't just organize our workflow, it fundamentally changed how we build. The autonomous prioritization has increased our delivery speed by 40%."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-primary to-secondary p-[2px]">
+                            <img src="https://ui-avatars.com/api/?name=Sarah+Chen&background=0A0A0A&color=fff" alt="User" class="w-full h-full rounded-full object-cover">
+                        </div>
+                        <div>
+                            <h5 class="font-bold text-sm">Sarah Chen</h5>
+                            <p class="text-xs text-gray-500">VP of Engineering at CloudScale</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="glass-card p-8 rounded-3xl reveal md:mt-8">
+                    <div class="flex gap-1 text-accent mb-6">
+                        <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i>
+                    </div>
+                    <p class="text-gray-300 text-lg sm:text-base leading-relaxed mb-8">"The UI is incredibly sleek, but the real power is under the hood. The Copilot caught scheduling conflicts before they even materialized."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-accent to-secondary p-[2px]">
+                            <img src="https://ui-avatars.com/api/?name=Marcus+Roe&background=0A0A0A&color=fff" alt="User" class="w-full h-full rounded-full object-cover">
+                        </div>
+                        <div>
+                            <h5 class="font-bold text-sm">Marcus Roe</h5>
+                            <p class="text-xs text-gray-500">Founder & CEO at Lumina</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="glass-card p-8 rounded-3xl reveal hidden lg:block">
+                    <div class="flex gap-1 text-accent mb-6">
+                        <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i>
+                    </div>
+                    <p class="text-gray-300 text-lg sm:text-base leading-relaxed mb-8">"I moved my entire design agency to Nexus. It handles client requests, categorizes assets intelligently, and gives us peace of mind."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-green-400 to-secondary p-[2px]">
+                            <img src="https://ui-avatars.com/api/?name=Elena+Torres&background=0A0A0A&color=fff" alt="User" class="w-full h-full rounded-full object-cover">
+                        </div>
+                        <div>
+                            <h5 class="font-bold text-sm">Elena Torres</h5>
+                            <p class="text-xs text-gray-500">Creative Director at VoidStudio</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="py-24 relative">
+        <div class="container mx-auto px-6 lg:px-12">
+            <div class="relative rounded-[40px] p-[2px] overflow-hidden reveal">
+                <!-- Moving Gradient Border -->
+                <div class="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-[spin-slow_4s_linear_infinite]"></div>
+                
+                <div class="relative bg-surface Light h-full w-full rounded-[38px] p-12 md:p-20 text-center flex flex-col items-center overflow-hidden">
+                    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsIDI1NSwgMjU1LCAwLjEpIi8+PC9zdmc+')] opacity-30"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-surfaceLight/90 to-transparent"></div>
+                    
+                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mb-8 relative z-10 border border-white/10 shadow-[0_0_40px_rgba(166,74,255,0.4)]">
+                        <i class="ph-fill ph-rocket-launch text-4xl text-white"></i>
+                    </div>
+                    
+                    <h2 class="text-4xl md:text-6xl font-bold mb-6 relative z-10">Ready to Sequence the Future?</h2>
+                    <p class="text-gray-400 text-lg md:text-xl mb-10 max-w-2xl relative z-10">Join thousands of avant-garde teams already scaling their operations exponentially.</p>
+                    
+                    <form class="flex flex-col sm:flex-row gap-4 w-full max-w-lg relative z-10">
+                        <div class="flex-1 relative">
+                            <i class="ph ph-envelope-simple absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="email" placeholder="Enter your work email" class="w-full bg-white/5 border border-white/10 rounded-full py-4 pl-12 pr-6 text-white placeholder-gray-500 focus:outline-none focus:border-primary/50 focus:bg-white/10 transition-all">
+                        </div>
+                        <button type="submit" class="glow-btn whitespace-nowrap">
+                            <span>Get Early Access</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 bg-[#020205] pt-16 pb-8">
+        <div class="container mx-auto px-6 lg:px-12">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-10 mb-16">
+                <div class="col-span-2 lg:col-span-2">
+                    <a href="#" class="flex items-center gap-2 mb-6">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-secondary flex items-center justify-center p-[2px]">
+                            <div class="w-full h-full bg-background rounded-[6px] flex items-center justify-center">
+                                <i class="ph-fill ph-target text-sm"></i>
+                            </div>
+                        </div>
+                        <span class="text-lg font-bold tracking-wide">Nexus<span class="text-primary">.ai</span></span>
+                    </a>
+                    <p class="text-gray-500 text-sm mb-6 max-w-xs leading-relaxed">The intelligent nervous system for high-velocity teams. Designed in parallel realities.</p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full glass shrink-0 flex items-center justify-center text-gray-400 hover:text-white hover:-translate-y-1 transition-all"><i class="ph-fill ph-twitter-logo text-lg"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full glass shrink-0 flex items-center justify-center text-gray-400 hover:text-white hover:-translate-y-1 transition-all"><i class="ph-fill ph-github-logo text-lg"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full glass shrink-0 flex items-center justify-center text-gray-400 hover:text-white hover:-translate-y-1 transition-all"><i class="ph-fill ph-discord-logo text-lg"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h5 class="font-bold text-white mb-6 tracking-wider text-sm uppercase">Platform</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="text-gray-500 hover:text-white transition-colors text-sm">Copilot</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-white transition-colors text-sm">Automations</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-white transition-colors text-sm">Analytics</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-white transition-colors text-sm">Integrations</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h5 class="font-bold text-white mb-6 tracking-wider text-sm uppercase">Company</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="text-gray-500 hover:text-white transition-colors text-sm">About Us</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-white transition-colors text-sm">Careers</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-white transition-colors text-sm">Blog</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-white transition-colors text-sm">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h5 class="font-bold text-white mb-6 tracking-wider text-sm uppercase">Legal</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="text-gray-500 hover:text-white transition-colors text-sm">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-white transition-colors text-sm">Terms of Service</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-white transition-colors text-sm">Security</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-gray-600 text-sm">&copy; 2026 Nexus AI Inc. All rights reserved.</p>
+                <div class="flex items-center gap-2 text-sm text-gray-600">
+                    <span>Status:</span> <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Systems Operational</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Minimal JS for Interactions -->
+    <script>
+        // Sticky Navbar with Glass Effect on Scroll
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('glass', 'shadow-lg');
+                navbar.classList.remove('py-6', 'border-transparent');
+                navbar.classList.add('py-4', 'border-white/10');
+            } else {
+                navbar.classList.remove('glass', 'shadow-lg', 'py-4', 'border-white/10');
+                navbar.classList.add('py-6', 'border-transparent');
+            }
+        });
+
+        // Intersection Observer for Scroll Reveal Animations
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach((el) => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
