@@ -2,7 +2,7 @@
 
 ## 🌐 Live Project
 
-[http://your-elastic-ip](http://16.16.247.58/)
+[Live Demo Link](http://16.16.247.58/)
 
 ## ⚙️ Implementation Steps
 
