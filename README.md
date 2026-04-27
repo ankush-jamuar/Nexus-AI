@@ -15,7 +15,7 @@ This project demonstrates hosting a static website using AWS S3 with versioning 
 - Lifecycle rules for cost optimization
 
 ## Website Link
-[Live Demo Link]([[http://16.16.247.58/](http://ankush-nexus-ai-2026.s3-website.ap-south-1.amazonaws.com/)](http://ankush-nexus-ai-2026.s3-website.ap-south-1.amazonaws.com/))
+[Live Demo](http://ankush-nexus-ai-2026.s3-website-ap-south-1.amazonaws.com/)
 
 ## Screenshots
 <img width="1919" height="1002" alt="Screenshot 2026-04-27 152145" src="https://github.com/user-attachments/assets/806a3b56-1136-487e-99ae-5efdf23bd5df" />
