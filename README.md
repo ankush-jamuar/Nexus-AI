@@ -1,51 +1,35 @@
-# AWS EC2 Static Website Hosting with IAM
+# AWS S3 Static Website Hosting
 
-## 🌐 Live Project
+## Name
+Ankush Jamuar
 
-[Live Demo Link](http://16.16.247.58/)
+## Registration Number
+12300584
 
-## ⚙️ Implementation Steps
+## Project Description
+This project demonstrates hosting a static website using AWS S3 with versioning and lifecycle management.
 
-* Launched EC2 instance (Amazon Linux)
-* Connected via MobaXterm (SSH)
-* Installed Apache (httpd)
-* Cloned GitHub repository
-* Deployed website to /var/www/html
-* Configured Elastic IP
+## Features Implemented
+- Static Website Hosting using Amazon S3
+- Versioning enabled (multiple versions of files)
+- Lifecycle rules for cost optimization
 
-## 🔐 IAM Users
+## Website Link
+[Live Demo Link]([[http://16.16.247.58/](http://ankush-nexus-ai-2026.s3-website.ap-south-1.amazonaws.com/)](http://ankush-nexus-ai-2026.s3-website.ap-south-1.amazonaws.com/))
 
-* User 1 (user1-no-access):
+## Screenshots
+<img width="1919" height="1000" alt="Screenshot 2026-04-27 150927" src="https://github.com/user-attachments/assets/0ee28e0b-9eab-4432-bc41-bb319fd813a2" />
+<img width="1919" height="997" alt="Screenshot 2026-04-27 151549" src="https://github.com/user-attachments/assets/85735968-4e47-470c-9166-5b8e517493ba" />
 
-  * No permissions assigned
-  * Shows authorization errors while accessing EC2
+## Steps Performed
+1. Created S3 bucket
+2. Enabled versioning
+3. Uploaded static website files
+4. Enabled static website hosting
+5. Configured bucket policy for public access
+6. Created lifecycle rule
 
-* User 2 (user2-ec2-access):
-
-  * Attached AmazonEC2FullAccess policy
-  * Can view and manage EC2 instances
-
-## 📸 Screenshots
-<img width="1919" height="998" alt="image" src="https://github.com/user-attachments/assets/3b07f5bd-46c6-4262-ae2e-a0828a0dfb26" />
-<img width="1917" height="1044" alt="image" src="https://github.com/user-attachments/assets/907f28b4-2bc5-4aaf-af98-3be5d93d5cb4" />
-<img width="1919" height="997" alt="Screenshot 2026-04-20 155818" src="https://github.com/user-attachments/assets/1749cbce-626b-4ddc-9b3e-f8a7035b7c04" />
-<img width="1917" height="996" alt="Screenshot 2026-04-20 160158" src="https://github.com/user-attachments/assets/c8c100de-85b5-4d33-961c-bafc1d230fe1" />
-
-* EC2 Instance Dashboard
-* Website Running (Elastic IP)
-* IAM User 1 (No Access - Error)
-* IAM User 2 (EC2 Access)
-
-## ⚠️ Challenges Faced
-
-* Permission issues with Apache directory
-* Understanding IAM access control behavior
-* Security group configuration
-
-## 🚀 Tech Stack
-
-* AWS EC2 (Amazon Linux)
-* Apache (httpd)
-* IAM
-* GitHub
-* HTML, CSS, JavaScript
+## Challenges Faced
+- Understanding bucket policies
+- Fixing public access issues
+- Managing file paths for static hosting
